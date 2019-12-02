@@ -1,0 +1,40 @@
+{
+  "host" : "127.0.0.1",
+  "port" : 9000,
+  "alias" : "jmx",
+  "queries" : [
+      {
+          "object_name" : "java.lang:type=Memory",
+          "object_alias" : "Memory"
+      }, 
+      {
+          "object_name" : "java.lang:type=Threading",
+          "attributes": ["ThreadCount", "PeakThreadCount"],
+          "object_alias" : "Threading"
+      }, 
+      {
+          "object_name" : "java.lang:type=GarbageCollector,name=G1 Young Generation",
+          "attributes": ["CollectionCount", "CollectionTime"],
+          "object_alias" : "G1GC-Young"
+      },
+      {
+          "object_name" : "java.lang:type=GarbageCollector,name=G1 Old Generation",
+          "attributes": ["CollectionCount", "CollectionTime"],
+          "object_alias" : "G1GC-Old"
+      },
+      {
+          "object_name" : "java.lang:type=OperatingSystem",
+          "attributes": ["FreeSwapSpaceSize", "FreePhysicalMemorySize", "TotalSwapSpaceSize", "TotalPhysicalMemorySize"],
+          "object_alias" : "OperatingSystem"
+      },
+      {
+          "object_name" : "com.zaxxer.hikari:type=Pool (HikariPool-1)",
+          "object_alias" : "HikariConnectionPool"
+      },
+      {
+          "object_name" : "Tomcat:j2eeType=Servlet,WebModule=//localhost/,name=dispatcherServlet,J2EEApplication=none,J2EEServer=none",
+          "attributes": ["errorCount", "processingTime", "requestCount"],
+          "object_alias" : "Tomcat"
+      }
+  ]
+}

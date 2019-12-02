@@ -1,0 +1,23 @@
+apm-server:
+  host: "0.0.0.0:8200"
+  setup.dashboards.enabled: true
+  rum:
+    enabled: true
+    allow_origins: ['http://localhost:8080']
+  kibana:
+    enabled: true
+    host: "localhost:5601"
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: CHANGE_ME
+  name: DemoWebApplication
+  keepfiles: 7
+  permissions: 0644
+logging.metrics:
+  enabled: true
+output.elasticsearch:
+  index: "apm-server-%{+yyyy.MM.dd}"
+  hosts: ["localhost:9200"]
+setup.template.name: "apm-server"
+setup.template.pattern: "apm-server-*"

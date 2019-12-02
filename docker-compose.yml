@@ -1,0 +1,93 @@
+version: "3.7"
+services:
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.4.2
+    container_name: "apm-server"
+    ports:
+      - "8200:8200"
+      - "6060:6060"
+    volumes:
+      - ./apm-server.yml:/usr/share/apm-server/apm-server.yml
+    depends_on:
+      - kibana
+      - elasticsearch
+    network_mode: host
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    container_name: "elasticsearch"
+    environment:
+      - cluster.name=cluster
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=true
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
+    network_mode: host
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.4.2
+    container_name: "logstash"
+    restart: on-failure
+    environment:
+      ELASTICSEARCH_HOSTS: http://localhost:9200
+    ports:
+      - 9600:9600
+      - 5044:5044
+      - 8201:8201
+    depends_on:
+      - elasticsearch
+    network_mode: host
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/jmx_config.json:/monitor/jmx/jmx_config.json
+    command: bash -c "bin/logstash-plugin install logstash-input-jmx && bin/logstash "
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.4.2
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://localhost:9200
+      XPACK_APM_ENABLED: "true"
+    ports:
+      - 5601:5601
+    volumes:
+      - kibana-storage
+    depends_on:
+      - elasticsearch
+    network_mode: host
+
+# Following is not required, but recommended if your system can support it
+
+  # metricbeat:
+  #   image: docker.elastic.co/beats/metricbeat:7.4.2
+  #   container_name: metricbeat
+  #   restart: on-failure
+  #   depends_on:
+  #     - elasticsearch
+  #   network_mode: host
+  #   volumes:
+  #     - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+  #   command: bash -c "metricbeat -e -c /usr/share/metricbeat/metricbeat.yml"
+  #   cap_add:
+  #     - NET_RAW
+  #     - NET_ADMIN
+
+  # packetbeat:
+  #   image: docker.elastic.co/beats/packetbeat:7.4.2
+  #   container_name: "packetbeat"
+  #   restart: on-failure
+  #   depends_on:
+  #     - elasticsearch
+  #   network_mode: host
+  #   volumes: 
+  #     - ./packetbeat.yml:/usr/share/packetbeat/packetbeat.yml:ro
+  #   command: bash -c "packetbeat -e -c /usr/share/packetbeat/packetbeat.yml"
+  #   cap_add:
+  #     - NET_RAW
+  #     - NET_ADMIN
+volumes:
+  kibana-storage:
+

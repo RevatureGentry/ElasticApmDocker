@@ -1,0 +1,46 @@
+output.elasticsearch:
+  enabled: true
+  hosts: ["localhost:9200"]
+setup.kibana:
+  enabled: true
+  host: "localhost:5601"
+
+setup.dashboards:
+  enabled: true
+
+metricbeat.modules:
+# Can be replaced with your credentials to monitor a MySQL Instance
+# - module: mysql
+#   metricsets: ["status"]
+#   hosts: ["tcp(127.0.0.1:3306)/"]
+#   username: USERNAME
+#   password: PASSWORD
+
+- module: system
+  metricsets:
+    - cpu             # CPU usage
+    - load            # CPU load averages
+    - memory          # Memory usage
+    - network         # Network IO
+    - process         # Per process metrics
+    - process_summary # Process summary
+    - uptime          # System Uptime
+    - socket_summary  # Socket summary
+    - core           # Per CPU core usage
+    - diskio         # Disk IO
+    - filesystem     # File system usage for each mountpoint
+    - fsstat         # File system summary metrics
+  enabled: true
+  period: 10s
+  processes: ['.*']
+
+  cpu.metrics:  [percentages, normalized_percentages, ticks]  
+  core.metrics: [percentages, ticks] 
+
+- module: system
+  metricsets: [socket] 
+  period: 1s
+
+  socket.reverse_lookup.enabled: false
+  socket.reverse_lookup.success_ttl: 60s
+  socket.reverse_lookup.failure_ttl: 60s
