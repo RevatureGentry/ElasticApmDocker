@@ -1,10 +1,10 @@
 output.elasticsearch:
   enabled: true
-  hosts: ["localhost:9200"]
+  hosts: ["elasticsearch:9200"]
   index: packetbeat
 setup.kibana:
   enabled: true
-  host: "localhost:5601"
+  host: "kibana:5601"
 
 setup.template.name: "packetbeat"
 setup.template.pattern: "packetbeat-*"
